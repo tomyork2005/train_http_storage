@@ -19,7 +19,11 @@ type HttpConfig struct {
 	IdleTimeout  time.Duration `yaml:"idle_timeout" idle-timeout-default:"60s"`
 }
 
-type databaseConfig struct {
+type PostgresConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
 }
 
 func MustLoadConfig() *Config {
