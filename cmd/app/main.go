@@ -4,7 +4,6 @@ import (
 	"RESTarchive/internals/config_parser"
 	mylog "RESTarchive/internals/logger"
 	"RESTarchive/internals/storages"
-	"RESTarchive/internals/storages/postgreSQL"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

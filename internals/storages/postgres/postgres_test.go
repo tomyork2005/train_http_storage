@@ -1,8 +1,10 @@
-package postgres_test
+package postgres
 
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -11,18 +13,30 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"RESTarchive/internals/storages"
-	mypost "RESTarchive/internals/storages/postgreSQL"
+	"RESTarchive/internals/models"
 )
 
 func startTestContainer(t *testing.T) string {
 	ctx := context.Background()
+
+	absPath, err := filepath.Abs("init.sql")
+	require.NoError(t, err)
+
+	r, err := os.Open(absPath)
+
 	req := testcontainers.ContainerRequest{
 		Image: "postgres:latest",
 		Env: map[string]string{
 			"POSTGRES_USER":     "testuser",
 			"POSTGRES_PASSWORD": "testpass",
 			"POSTGRES_DB":       "testdb",
+		},
+		Files: []testcontainers.ContainerFile{
+			{
+				Reader:            r,
+				HostFilePath:      absPath, // will be discarded internally
+				ContainerFilePath: "/init.sql",
+			},
 		},
 		ExposedPorts: []string{"5432/tcp"},
 		WaitingFor:   wait.ForListeningPort("5432/tcp").WithStartupTimeout(30 * time.Second),
@@ -54,14 +68,14 @@ func TestAddUsersAndUploadFiles(t *testing.T) {
 	tests := []struct {
 		name        string
 		users       []string
-		files       []storages.FileToAdd
+		files       []models.FileToAdd
 		obligations []string
 		testId      int64
 	}{
 		{
 			name:  "add 2 file to user and get 2 alias",
 			users: []string{"andreyTest", "vitaliyTest", "maksTest"},
-			files: []storages.FileToAdd{
+			files: []models.FileToAdd{
 				{
 					Alias:      "mustBeAndrey1",
 					PathToFile: "nice_path_test1",
@@ -93,7 +107,7 @@ func TestAddUsersAndUploadFiles(t *testing.T) {
 			t.Parallel()
 			connectString := startTestContainer(t)
 
-			storage, err := mypost.NewStorage(connectString)
+			storage, err := NewStorage(connectString)
 			require.NoError(t, err)
 
 			for _, user := range test.users {

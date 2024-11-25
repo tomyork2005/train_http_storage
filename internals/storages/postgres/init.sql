@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL);
+
+CREATE TABLE IF NOT EXISTS files (
+    id SERIAL PRIMARY KEY,
+    alias VARCHAR(100) UNIQUE,
+    path_to_file VARCHAR(200) UNIQUE NOT NULL,
+    user_id INTEGER REFERENCES users(id));
+
+CREATE INDEX IF NOT EXISTS file_fk ON files(user_id);
+
