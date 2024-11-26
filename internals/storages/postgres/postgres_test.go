@@ -23,6 +23,7 @@ func startTestContainer(t *testing.T) string {
 	require.NoError(t, err)
 
 	r, err := os.Open(absPath)
+	require.NoError(t, err)
 
 	req := testcontainers.ContainerRequest{
 		Image: "postgres:latest",

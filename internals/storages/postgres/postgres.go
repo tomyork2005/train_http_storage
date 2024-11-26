@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	_ "github.com/lib/pq"
 
@@ -28,7 +29,11 @@ func NewStorage(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	initSQl, err := os.ReadFile("init.sql")
+	absPath, err := filepath.Abs("init.sql")
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	initSQl, err := os.ReadFile(absPath)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
