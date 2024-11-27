@@ -1,4 +1,4 @@
-package config_parser
+package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	Env        string `yaml:"env" env-default:"local"`
-	HttpConfig `yaml:"http_server"`
+	Env            string `yaml:"env" env-default:"local"`
+	HttpConfig     `yaml:"http_server"`
+	PostgresConfig `yaml:"postgres_db"`
 }
 
 type HttpConfig struct {
@@ -20,10 +21,10 @@ type HttpConfig struct {
 }
 
 type PostgresConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
+	Host     string `yaml:"host" env-default:"localhost"`
+	Port     int    `yaml:"port" env-default:"5432"`
+	User     string `yaml:"user" env-default:"postgres"`
+	Password string `yaml:"password" env-default:"postgres"`
 }
 
 func MustLoadConfig() *Config {

@@ -4,3 +4,8 @@ http_server:
   write_timeout: 4s
   read_timeout: 4s
   idle_timeout: 60s
+postgres_db:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "mysecretpassword"

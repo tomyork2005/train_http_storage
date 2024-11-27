@@ -9,6 +9,28 @@ import (
 	"runtime"
 )
 
+type writerHook struct {
+	Writer    []io.Writer
+	LogLevels []logrus.Level
+}
+
+func (hook *writerHook) Fire(entry *logrus.Entry) error {
+	line, err := entry.String()
+	if err != nil {
+		return fmt.Errorf("could not marshal logrus log entry: %w", err)
+	}
+
+	for _, w := range hook.Writer {
+		w.Write([]byte(line))
+	}
+
+	return nil
+}
+
+func (hook *writerHook) Levels() []logrus.Level {
+	return hook.LogLevels
+}
+
 func Init() {
 	l := logrus.New()
 	l.SetReportCaller(true)
@@ -32,4 +54,11 @@ func Init() {
 	}
 
 	l.SetOutput(io.Discard)
+
+	l.AddHook(&writerHook{
+		Writer:    []io.Writer{allFile, os.Stdout},
+		LogLevels: logrus.AllLevels,
+	})
+
+	l.SetLevel(logrus.TraceLevel)
 }

@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"RESTarchive/internals/models"
+	"train_http_storage/internals/models"
 )
 
 type Storage struct {
@@ -17,7 +17,7 @@ type Storage struct {
 }
 
 func NewStorage(storagePath string) (*Storage, error) {
-	const op = "storage.PostgreSQL.NewStorage"
+	const op = "storage.postgres.NewStorage"
 
 	db, err := sql.Open("postgres", storagePath)
 	if err != nil {
@@ -29,10 +29,11 @@ func NewStorage(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	absPath, err := filepath.Abs("init.sql")
+	absPath, err := filepath.Abs("internals/storages/postgres/init.sql")
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+
 	initSQl, err := os.ReadFile(absPath)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -64,7 +65,7 @@ func (s *Storage) UploadFiles(file models.FileToAdd) error {
 }
 
 func (s *Storage) NewUser(name string) error {
-	const op = "storage.NewUser"
+	const op = "storage.postgres.NewUser"
 
 	stmt, err := s.db.Prepare(`INSERT INTO users (name) values ($1)`)
 	if err != nil {
@@ -80,7 +81,7 @@ func (s *Storage) NewUser(name string) error {
 }
 
 func (s *Storage) TakeAliasesByUserId(id int64) ([]string, error) {
-	const op = "storage.TakeAliasesByUserId"
+	const op = "storage.postgres.TakeAliasesByUserId"
 
 	stmt, err := s.db.Prepare(`SELECT alias from files where user_id=$1`)
 	if err != nil {

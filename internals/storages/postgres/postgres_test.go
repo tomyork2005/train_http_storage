@@ -13,7 +13,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"RESTarchive/internals/models"
+	"train_http_storage/internals/models"
 )
 
 func startTestContainer(t *testing.T) string {

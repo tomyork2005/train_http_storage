@@ -2,52 +2,54 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"log/slog"
 	"net/http"
 	"os"
+	"train_http_storage/internals/handlers/users"
 
-	"github.com/julienschmidt/httprouter"
-
-	"RESTarchive/internals/config_parser"
-	log "RESTarchive/internals/logger"
-	"RESTarchive/internals/storages/postgres"
+	"train_http_storage/internals/config"
+	log "train_http_storage/internals/logger"
+	"train_http_storage/internals/storages/postgres"
 )
 
 func main() {
 
-	cfg := config_parser.MustLoadConfig()
+	cfg := config.MustLoadConfig()
 
 	logger := log.SetupLogger(cfg.Env)
+	slog.SetDefault(logger)
 
-	logger.Info("LOGGER ENABLE level = %s", cfg.Env)
+	slog.Info("enable logger", slog.String("logger level", cfg.Env))
 
 	// connect to database
-	storagePath := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable",
-		"localhost", 5432, "postgres", "mysecretpassword")
-	storage, err := postgres.NewStorage(fmt.Sprintf(storagePath))
+	storage, err := postgres.NewStorage(fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable",
+		cfg.Host, cfg.Port, cfg.User, cfg.Password))
 	if err != nil {
-		logger.Error(err.Error())
+		slog.Error("error with create NewStorage", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
+
 	defer func() {
 		err = storage.CloseStorage()
 		if err != nil {
-			logger.Error(err.Error())
+			slog.Error("error with closing Storage", slog.String("error ", err.Error()))
 		}
 	}()
 
-	logger.Info("successfully connected to storage")
+	slog.Info("successfully connected to storage")
 
-	logger.Info("starting server", slog.String("address", cfg.Address))
+	router := chi.NewRouter()
 
-	router := httprouter.New()
-	startServer(router, cfg, logger)
+	handler := users.NewHandler()
+	//	handler.Register(router)
 
-	logger.Error("server stopped")
+	slog.Info("starting server", slog.String("address", cfg.Address))
+	startServer(router, cfg)
 
 }
 
-func startServer(router *httprouter.Router, cfg *config_parser.Config, logger *slog.Logger) {
+func startServer(router chi.Router, cfg *config.Config) {
 	srv := http.Server{
 		Addr:         cfg.HttpConfig.Address,
 		Handler:      router,
@@ -57,9 +59,8 @@ func startServer(router *httprouter.Router, cfg *config_parser.Config, logger *s
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
-		logger.Error("failed to start server")
+		slog.Error("failed to start server")
 	}
 
-	logger.Error("server stopped")
-
+	slog.Error("server stopped")
 }
