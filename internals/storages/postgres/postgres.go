@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,13 +13,13 @@ import (
 )
 
 type Storage struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewStorage(storagePath string) (*Storage, error) {
 	const op = "storage.postgres.NewStorage"
 
-	db, err := sql.Open("postgres", storagePath)
+	db, err := sqlx.Connect("postgres", storagePath)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -47,7 +47,7 @@ func NewStorage(storagePath string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) UploadFiles(file models.FileToAdd) error {
+func (s *Storage) UploadFiles(file models.File) error {
 	const op = "storage.UploadFiles"
 
 	stmt, err := s.db.Prepare(`INSERT INTO files (
@@ -57,22 +57,6 @@ func (s *Storage) UploadFiles(file models.FileToAdd) error {
 	}
 
 	_, err = stmt.Exec(file.Alias, file.PathToFile, file.UserId)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	return nil
-}
-
-func (s *Storage) NewUser(name string) error {
-	const op = "storage.postgres.NewUser"
-
-	stmt, err := s.db.Prepare(`INSERT INTO users (name) values ($1)`)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	_, err = stmt.Exec(name)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -121,7 +105,3 @@ func (s *Storage) CloseStorage() error {
 	}
 	return nil
 }
-
-// todo unload ( из бд) логика сжатия в хенделере
-
-// todo integralTestForDb bd + write tests

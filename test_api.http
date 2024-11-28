@@ -1,4 +1,14 @@
 ### GET request to example server
-GET http://localhost:8080/api/users
+POST http://localhost:8080/auth/sing-in
+Content-Type: application/json
+
+{
+  "email": "example@example.com",
+  "password": "yourpassword"
+}
 
 ###
+
+GET http://localhost:8080/files/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzI4MTU5NjAsImlhdCI6MTczMjgxNTA2MCwic3ViIjoiMSJ9.j48GgdfYd3VbfmPAlR6eIFj_nIQi18qC3oFXitdP_hU
+

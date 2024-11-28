@@ -30,16 +30,16 @@ type PostgresConfig struct {
 func MustLoadConfig() *Config {
 	configEnv := os.Getenv("CONFIG_PATH")
 	if configEnv == "" {
-		log.Fatal("config path can`t be empty")
+		log.Fatal("configs path can`t be empty")
 	}
 
 	if _, err := os.Stat(configEnv); os.IsNotExist(err) {
-		log.Fatalf("config file doesn't exist %s", err)
+		log.Fatalf("configs file doesn't exist %s", err)
 	}
 
 	var config Config
 	if err := cleanenv.ReadConfig(configEnv, &config); err != nil {
-		log.Fatalf("fail with read config %s", err)
+		log.Fatalf("fail with read configs %s", err)
 	}
 
 	return &config

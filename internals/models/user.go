@@ -13,11 +13,11 @@ func init() {
 }
 
 type User struct {
-	ID           int64     `json:"id"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	Password     string    `json:"password"`
-	RegisteredAt time.Time `json:"registered_at"`
+	ID           int64     `json:"id" db:"id"`
+	Name         string    `json:"name" db:"name"`
+	Email        string    `json:"email" db:"email"`
+	Password     string    `json:"password" db:"password"`
+	RegisteredAt time.Time `json:"register_at" db:"register_at"`
 }
 
 type SingUpInput struct {
@@ -26,6 +26,15 @@ type SingUpInput struct {
 	Password string `json:"password" validate:"required,gte=6"`
 }
 
-func (i SingUpInput) Validate() error {
-	return validate.Struct(i)
+func (su SingUpInput) Validate() error {
+	return validate.Struct(su)
+}
+
+type SingInInput struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,gte=6"`
+}
+
+func (si SingInInput) Validate() error {
+	return validate.Struct(si)
 }

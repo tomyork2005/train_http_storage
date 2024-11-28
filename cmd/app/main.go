@@ -2,14 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
 	"log/slog"
 	"net/http"
 	"os"
-	"train_http_storage/internals/handlers/users"
+	"time"
+	"train_http_storage/internals/handlers"
+	"train_http_storage/pkg/hash"
+
+	"github.com/go-chi/chi/v5"
 
 	"train_http_storage/internals/config"
 	log "train_http_storage/internals/logger"
+	"train_http_storage/internals/service"
 	"train_http_storage/internals/storages/postgres"
 )
 
@@ -36,13 +40,14 @@ func main() {
 			slog.Error("error with closing Storage", slog.String("error ", err.Error()))
 		}
 	}()
-
 	slog.Info("successfully connected to storage")
 
-	router := chi.NewRouter()
+	hasher := hash.NewSHA1Hash("saltSimple")
+	userService := service.NewUserService(storage, hasher, []byte("sample secret"), 15*time.Minute)
+	fileService := service.NewFileService(storage)
 
-	handler := users.NewHandler()
-	//	handler.Register(router)
+	handler := handlers.NewHandler(userService, fileService)
+	router := handler.InitRouter()
 
 	slog.Info("starting server", slog.String("address", cfg.Address))
 	startServer(router, cfg)

@@ -1,7 +1,7 @@
 # REST API
 
-POST /api/users/register
-POST /api/users/login
+POST /auth/sing-up
+POST /auth/sing-in
 
 GET /api/files/ -- list of user files aliases
 GET /api/files/{alias} -- file by alias

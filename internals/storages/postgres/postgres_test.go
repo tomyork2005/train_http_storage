@@ -69,14 +69,14 @@ func TestAddUsersAndUploadFiles(t *testing.T) {
 	tests := []struct {
 		name        string
 		users       []string
-		files       []models.FileToAdd
+		files       []models.File
 		obligations []string
 		testId      int64
 	}{
 		{
 			name:  "add 2 file to user and get 2 alias",
 			users: []string{"andreyTest", "vitaliyTest", "maksTest"},
-			files: []models.FileToAdd{
+			files: []models.File{
 				{
 					Alias:      "mustBeAndrey1",
 					PathToFile: "nice_path_test1",
