@@ -8,10 +8,10 @@ import (
 
 type Files interface {
 	GetAll(ctx context.Context, id int64) ([]models.File, error)
-	//Add(ctx context.Context, file *models.File) error
-	//GetByAlias(alias string) (models.File, error)
-	//Delete(alias string) error
-	//DeleteAll() error
+	//todo Add(ctx context.Context, file *models.File) error
+	//todo GetByAlias(alias string) (models.File, error)
+	//todo Delete(alias string) error
+	//todo DeleteAll() error
 }
 
 type User interface {

@@ -1,5 +1,11 @@
 # REST API
 
+
+// todo test, prometheus/grafana, docker image, some methods
+
+
+
+
 POST /auth/sing-up
 POST /auth/sing-in
 

@@ -1,10 +1,11 @@
 ### GET request to example server
-POST http://localhost:8080/auth/sing-in
+POST http://localhost:8080/auth/sing-up
 Content-Type: application/json
 
 {
-  "email": "example@example.com",
-  "password": "yourpassword"
+  "name": "vitalu",
+  "email": "example123@example.com",
+  "password": "yourpassword123"
 }
 
 ###
